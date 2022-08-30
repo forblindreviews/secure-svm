@@ -1,0 +1,1345 @@
+{
+    "model_selection_no_class_sep": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 5,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.01,
+                    "max_iter": 35
+                }
+            },
+            {
+                "name": "smo",
+                "script": "secure_dual_svm_optim",
+                "params": {
+                    "C": 1.0,
+                    "tolerance": 1e-3,
+                    "eps": 1e-3,
+                    "max_phases": 35
+                }
+            },
+            {
+                "name": "sgd",
+                "script": "secure_sgd_svm_optim",
+                "params": {
+                    "lr": 0.001,
+                    "lambd": 2.0,
+                    "epochs": 35
+                }
+            }
+        ]
+    },
+
+
+    "model_selection_05": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 5,
+        "class_sep": 0.5,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.01,
+                    "max_iter": 35
+                }
+            },
+            {
+                "name": "smo",
+                "script": "secure_dual_svm_optim",
+                "params": {
+                    "C": 1.0,
+                    "tolerance": 1e-3,
+                    "eps": 1e-3,
+                    "max_phases": 35
+                }
+            },
+            {
+                "name": "sgd",
+                "script": "secure_sgd_svm_optim",
+                "params": {
+                    "lr": 0.001,
+                    "lambd": 2.0,
+                    "epochs": 35
+                }
+            }
+        ]
+    },
+
+
+    "model_selection_10": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 5,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.01,
+                    "max_iter": 35
+                }
+            },
+            {
+                "name": "smo",
+                "script": "secure_dual_svm_optim",
+                "params": {
+                    "C": 1.0,
+                    "tolerance": 1e-3,
+                    "eps": 1e-3,
+                    "max_phases": 35
+                }
+            },
+            {
+                "name": "sgd",
+                "script": "secure_sgd_svm_optim",
+                "params": {
+                    "lr": 0.001,
+                    "lambd": 2.0,
+                    "epochs": 35
+                }
+            }
+        ]
+    },
+
+    
+    "test_100r_4c": {
+        "n_rows": 100,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_150r_4c": {
+        "n_rows": 150,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_200r_4c": {
+        "n_rows": 200,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_250r_4c": {
+        "n_rows": 250,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_300r_4c": {
+        "n_rows": 300,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_350r_4c": {
+        "n_rows": 350,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_4c": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_2c": {
+        "n_rows": 400,
+        "n_columns": 2,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_3c": {
+        "n_rows": 400,
+        "n_columns": 3,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_5c": {
+        "n_rows": 400,
+        "n_columns": 5,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_6c": {
+        "n_rows": 400,
+        "n_columns": 6,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_7c": {
+        "n_rows": 400,
+        "n_columns": 7,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_400r_8c": {
+        "n_rows": 400,
+        "n_columns": 8,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "semi2k",
+                "script": "semi2k.sh",
+                "n_parties": 2,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_040": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 0.4,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_050": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 0.5,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_060": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 0.6,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_070": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 0.7,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_080": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 0.8,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_090": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 0.9,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_100": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_110": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 1.1,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "test_class_sep_120": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 10,
+        "class_sep": 1.2,
+        "train_percentage": 0.5,
+        "change_dataset": true,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "ls_selection_100r": {
+        "n_rows": 100,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 1.0,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "scaled",
+                "script": "secure_dual_ls_scaled",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "ls_selection_200r": {
+        "n_rows": 200,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 1.0,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "scaled",
+                "script": "secure_dual_ls_scaled",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "ls_selection_300r": {
+        "n_rows": 300,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 1.0,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "scaled",
+                "script": "secure_dual_ls_scaled",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+
+    "ls_selection_400r": {
+        "n_rows": 400,
+        "n_columns": 4,
+        "n_repetitions": 3,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 1.0,
+                    "max_iter": 50
+                }
+            },
+            {
+                "name": "scaled",
+                "script": "secure_dual_ls_scaled",
+                "params": {
+                    "lambd": 1.0,
+                    "lr": 0.1,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+    "real_experiment_hcc": {
+        "n_rows": 115,
+        "n_columns": 27,
+        "test_percentage": 0.3,
+        "change_dataset": false,
+        "class_sep": 0,
+        "n_repetitions": 5,
+        "dataset": "dataset",
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 0.001,
+                    "lr": 0.1,
+                    "max_iter": 200
+                }
+            },
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 0.001,
+                    "max_iter": 200
+                }
+            },
+            {
+                "name": "scaled",
+                "script": "secure_dual_ls_scaled",
+                "params": {
+                    "lambd": 0.001,
+                    "lr": 0.1,
+                    "max_iter": 200
+                }
+            },
+            {
+                "name": "logreg",
+                "script": "sec_logistic",
+                "params": {
+                    "lr": 0.1,
+                    "threshold": 0.5,
+                    "max_iter": 200
+                }
+            }
+        ]
+    },
+
+    "real_experiment_credit": {
+        "n_rows": 700,
+        "n_columns": 48,
+        "test_percentage": 0.3,
+        "change_dataset": false,
+        "class_sep": 0,
+        "n_repetitions": 5,
+        "dataset": "credit_curated",
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 20,
+                    "lr": 0.001,
+                    "max_iter": 400
+                }
+            },
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 20,
+                    "max_iter": 400
+                }
+            },
+            {
+                "name": "scaled",
+                "script": "secure_dual_ls_scaled",
+                "params": {
+                    "lambd": 20,
+                    "lr": 0.001,
+                    "max_iter": 400
+                }
+            },
+            {
+                "name": "logreg",
+                "script": "sec_logistic",
+                "params": {
+                    "lr": 0.1,
+                    "threshold": 0.5,
+                    "max_iter": 400
+                }
+            }
+        ]
+    },
+
+    "network_experiment": {
+        "n_rows": 200,
+        "n_columns": 4,
+        "n_repetitions": 1,
+        "class_sep": 1.0,
+        "train_percentage": 0.5,
+        "change_dataset": false,
+        "protocols": [
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            },
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "bb88",
+                
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 1.0,
+                    "max_iter": 50
+                }
+            }
+        ]
+    },
+
+    "real_experiment_definitive": {
+        "n_rows": 700,
+        "n_columns": 48,
+        "test_percentage": 0.3,
+        "change_dataset": false,
+        "class_sep": 0,
+        "n_repetitions": 1,
+        "dataset": "credit_curated",
+        "protocols": [
+            {
+                "name": "rep4-ring",
+                "script": "rep4-ring.sh",
+                "n_parties": 4,
+                "type": "mod2k"
+            },
+            {
+                "name": "replicated-ring",
+                "script": "ring.sh",
+                "n_parties": 3,
+                "type": "mod2k"
+            }
+        ],
+        "algorithms": [            
+            {
+                "name": "ls",
+                "script": "secure_dual_ls_svm_optim",
+                "params": {
+                    "lambd": 20,
+                    "lr": 0.001,
+                    "max_iter": 400
+                }
+            },
+            {
+                "name": "bb88",
+                "script": "secure_dual_ls_bb88",
+                "params": {
+                    "lambd": 20,
+                    "max_iter": 400
+                }
+            }
+        ]
+    }
+}

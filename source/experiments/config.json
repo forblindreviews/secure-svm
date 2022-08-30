@@ -1,0 +1,8 @@
+{
+    "experiments_path": "source/experiments/",
+    "datasets_path": "source/experiments/datasets",
+    "mp_spdz_path": "MP-SPDZ/",
+    "secure_src_path": "source/secure_svm/",
+    "secure_logreg_path": "source/secure_logistic_regression/",
+    "log_file": "source/experiments/log.txt"
+}

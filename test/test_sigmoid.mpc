@@ -1,0 +1,7 @@
+from Compiler import ml 
+
+
+a = Array(2, sfix)
+s = ml.sigmoid(a)
+
+print_ln("%s", s.reveal())

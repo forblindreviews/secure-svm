@@ -1,0 +1,10 @@
+import sys
+
+n = int(sys.args[1])
+m = int(sys.args[2])
+n_sec = sfix(n)
+m_sec = sfix(m)
+
+result = n_sec * m_sec
+
+print_ln("%s", result.reveal())

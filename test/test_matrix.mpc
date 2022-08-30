@@ -1,0 +1,35 @@
+def show_matrix(X):
+    for i in range(len(X)):
+        print_ln("%s", X[i].reveal())
+    print_ln("----------------")
+
+n = 4
+m = 2
+
+alpha = Matrix(n, 1, sfix)
+y = Matrix(n, 1, sfix)
+X = Matrix(n, m, sfix)
+
+alpha[0][0] = 1
+alpha[1][0] = 2
+alpha[2][0] = 3
+alpha[3][0] = 4
+
+y[0][0] = 1
+y[1][0] = 2
+y[2][0] = 3
+y[3][0] = 4
+
+X[0][0] = 1
+X[1][0] = 2
+X[2][0] = 3
+X[3][0] = 4
+X[0][1] = 5
+X[1][1] = 6
+X[2][1] = 7
+X[3][1] = 8
+
+
+w = X.transpose().dot(alpha.schur(y))
+
+show_matrix(w)

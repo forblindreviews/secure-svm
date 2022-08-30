@@ -1,0 +1,389 @@
+import numpy as np
+import math
+
+
+# Execution parameters 
+n_rows = int(program.args[1])
+n_columns = int(program.args[2])
+n_parties = int(program.args[3])
+f = int(program.args[4])
+k = int(program.args[5])
+
+sfix.set_precision(f, k)
+
+# SMO parameters
+C = float(program.args[6])
+tolerance = float(program.args[7])
+eps = float(program.args[8])
+max_phases = int(program.args[9])
+kernel_type = "linear"
+degree = None
+
+# Number of rows for each party
+rows_per_party = n_rows // n_parties
+last_party = 0 
+if n_rows % n_parties != 0:
+    last_party = rows_per_party + (n_rows % n_parties)
+else:
+    last_party = rows_per_party
+
+n_bits = math.floor(math.log2(n_rows)) + 1
+
+
+def show_matrix(X):
+    for i in range(len(X)):
+        print_ln("%s", X[i].reveal())
+
+
+def negative(X):
+    neg_X = Matrix(len(X), len(X[0]), sfix)
+    for i in range(len(X)):
+        for j in range(len(X[0])):
+            neg_X[i][j] = X[i][j] * sfix(-1)
+    return neg_X
+
+
+def max_mpc(a, b):
+    a_alloc = Array(1, sfix)
+    b_alloc = Array(1, sfix)
+    a_alloc[0] = a
+    b_alloc[0] = b
+    
+    max_alloc = Array(1, sfix)
+    
+    @if_e((a_alloc[0] < b_alloc[0]).reveal())
+    def _():
+        max_alloc[0] = b_alloc[0]
+    @else_ 
+    def _():
+        max_alloc[0] = a_alloc[0]
+    
+    return max_alloc[0]
+
+
+def min_mpc(a, b):
+    a_alloc = Array(1, sfix)
+    b_alloc = Array(1, sfix)
+    a_alloc[0] = a
+    b_alloc[0] = b
+    
+    min_alloc = Array(1, sfix)
+    
+    @if_e((a_alloc[0] < b_alloc[0]).reveal())
+    def _():
+        min_alloc[0] = a_alloc[0]
+    @else_ 
+    def _():
+        min_alloc[0] = b_alloc[0]
+    
+    return min_alloc[0]
+
+
+def kernel(a, b):
+    if kernel_type == "linear":
+        return sfix.dot_product(a, b)
+    if kernel_type == "poly":
+        return (1 + sfix.dot_product(a, b)) ** degree
+
+
+def scalar_vector_mult(scalar, vector):
+    result_vector = Array(len(vector), sfix)
+    
+    @for_range(len(vector))
+    def _(i):
+        result_vector[i] = scalar * vector[i]
+    
+    return result_vector
+
+
+def fit(X, y, max_passes):
+    n = len(X)
+    m = len(X[0])
+
+    n_alloc = Array(1, cint)
+    n_alloc[0] = cint(n)
+
+    # Alphas initialization
+    alphas = Matrix(n, 1, sfix)
+    alphas.assign_all(0)
+
+    # Intercept initialization
+    b = Array(1, sfix)
+    b[0] = 0
+
+    W = Matrix(m, 1, sfix)
+    W.assign_all(0)
+
+    passes_alloc = Array(1, cint)
+    passes_alloc[0] = cint(0)
+    max_passes_alloc = Array(1, cint)
+    max_passes_alloc[0] = cint(max_passes)
+
+    num_changed_alloc = Array(1, cint)
+
+    @do_while
+    def _():
+        num_changed_alloc[0] = 0
+
+        i = Array(1, cint)
+        i[0] = 0
+        @while_do(lambda x: x < n_rows, regint(0))
+        def _(_):
+            # Break variable
+            break_var = Array(1, cint)
+            break_var[0] = 0
+
+            Xi = X[i[0]]
+            Ei = Array(1, sfix)
+            Ei[0] = 0
+
+            # Ei computation # ==== CAN BE OPTIMIZED
+            # ========== OPTIMIZATION
+            # @for_range(len(X[0]))
+            # def _(k):
+            #     Ei[0] += Xi[k] * W[k][0]
+            # ========== OPTIMIZED AS FOLLOWS
+            Ei[0] = W.transpose().dot(Xi)[0][0]
+            # ==========
+            Ei[0] += b[0] - y[i[0]][0]
+
+            yi = y[i[0]][0]
+            alpha_i = alphas[i[0]][0]
+
+            ri = Ei[0] * yi
+
+            # Computes the condition (ri < -tolerance and alpha_i < C) or (ri > tolerance and alpha_i > 0) in a secret way
+            condition_le_tol = ri < -tolerance
+            condition_le_alpha = alpha_i < C
+            condition_ge_tol = ri > tolerance
+            condition_ge_alpha = alpha_i > 0
+
+            le_and = condition_le_tol * condition_le_alpha
+            ge_and = condition_ge_tol * condition_ge_alpha
+
+            complete_condition = ((((le_and + 1) % 2) * ((ge_and + 1) % 2)) + 1) % 2
+
+            @if_(complete_condition.reveal())
+            def _():
+                j = Array(1, cint)
+                j[0] = get_index_heuristic(i[0])
+                Xj = X[j[0]]
+                Ej = Array(1, sfix)
+                Ej[0] = 0
+
+                # Ej computation  # ==== CAN BE OPTIMIZED
+                # ========== OPTIMIZATION
+                # @for_range(len(X[0]))
+                # def _(k):   
+                #    Ej[0] += Xj[k] * W[k][0]
+                # ========== OPTIMIZED AS FOLLOWS
+                Ej[0] = W.transpose().dot(Xj)[0][0]
+                # ==========
+                Ej[0] += b[0] - y[j[0]][0]
+
+                yj = y[j[0]][0]
+
+                alpha_i_old = alphas[i[0]][0]
+                alpha_j_old = alphas[j[0]][0]
+
+                L = Array(1, sfix)
+                H = Array(1, sfix)
+
+                @if_e((yi != yj).reveal())
+                def _():
+                    # ========== OPTIMIZATION
+                    # L[0] = max_mpc(0, alphas[j[0]][0] - alphas[i[0]][0])
+                    # H[0] = min_mpc(C, C + alphas[j[0]][0] - alphas[i[0]][0])
+                    # ========== OPTIMIZED AS FOLLOWS
+                    L[0] = sfix(0).max(alphas[j[0]][0] - alphas[i[0]][0])
+                    H[0] = sfix(C).min(C + alphas[j[0]][0] - alphas[i[0]][0])
+                    # ==========
+                @else_
+                def _():
+                    # ========== OPTIMIZATION
+                    # L[0] = max_mpc(0, alphas[j[0]][0] + alphas[i[0]][0] - C)
+                    # H[0] = min_mpc(C, alphas[j[0]][0] + alphas[i[0]][0])
+                    # ========== OPTIMIZED AS FOLLOWS
+                    L[0] = sfix(0).max(alphas[j[0]][0] + alphas[i[0]][0] - C)
+                    H[0] = sfix(C).min(alphas[j[0]][0] + alphas[i[0]][0])
+                    # ==========
+                @if_((L[0] == H[0]).reveal())
+                def _():
+                    # Continue
+                    break_var[0] = 1
+
+                kii = Array(1, sfix)
+                kij = Array(1, sfix)
+                kjj = Array(1, sfix)
+
+                eta = Array(1, sfix)
+
+                @if_(break_var[0].bit_not())
+                def _():
+                    kii[0] = kernel(X[i[0]], X[i[0]])
+                    kij[0] = kernel(X[i[0]], X[j[0]])
+                    kjj[0] = kernel(X[j[0]], X[j[0]])
+
+                    eta[0] = 2 * kij[0] - kii[0] - kjj[0]
+
+                    @if_((eta[0] >= 0).reveal())
+                    def _():
+                        break_var[0] = 1
+
+                alpha_j_new = Array(1, sfix)
+                @if_(break_var[0].bit_not())
+                def _():
+                    alpha_j_new[0] = alphas[j[0]][0] - yj * (Ei[0] - Ej[0]) / eta[0]
+
+                     # Alpha2 new clipped
+                    @if_((alpha_j_new[0] < L[0]).reveal())
+                    def _():
+                        alpha_j_new[0] = L[0]
+                    @if_((alpha_j_new[0] > H[0]).reveal())
+                    def _():
+                        alpha_j_new[0] = H[0]
+
+                    abs_alphas = abs(alpha_j_new[0] - alphas[j[0]][0])
+                    @if_((abs_alphas < eps).reveal())
+                    def _():
+                        break_var[0] = 1
+                
+                alpha_i_new = Array(1, sfix)
+                @if_(break_var[0].bit_not())
+                def _():
+                    s = y[i[0]][0] * y[j[0]][0]
+                    alpha_i_new[0] = alphas[i[0]][0] + s * (alphas[j[0]][0] - alpha_j_new[0])
+
+                    b1 = Array(1, sfix)
+                    b2 = Array(1, sfix)
+                    b1[0] = b[0] - Ei[0] - y[i[0]][0] * (alpha_i_new[0] - alphas[i[0]][0]) * kii[0] - y[j[0]][0] * (alpha_j_new[0] - alphas[j[0]][0]) * kij[0]
+                    b2[0] = b[0] - Ej[0] - y[i[0]][0] * (alpha_i_new[0] - alphas[i[0]][0]) * kij[0] - y[j[0]][0] * (alpha_j_new[0] - alphas[j[0]][0]) * kjj[0]
+
+                    alpha_i_condition = (alpha_i_new[0] > 0) * (alpha_i_new[0] < C)
+                    @if_(alpha_i_condition.reveal())
+                    def _():
+                        b[0] = b1[0]
+                    alpha_j_condition = (alpha_j_new[0] > 0) * (alpha_j_new[0] < C)
+                    @if_e(alpha_j_condition.reveal())
+                    def _():
+                        b[0] = b2[0]
+                    @else_
+                    def _():
+                        b[0] = (b1[0] + b2[0]) / 2.
+
+                    alphas[i[0]][0] = alpha_i_new[0]
+                    alphas[j[0]][0] = alpha_j_new[0]
+
+                    # Weight update 
+                    #============ CAN BE OPTIMIZED
+                    # W_computation = Array(n_columns, sfix)
+                    # W_computation.assign_all(0)
+                    # for t in range(n_rows):
+                    #     W_computation += scalar_vector_mult(y[t][0] * alphas[t][0], X[t])
+
+                    # for t in range(n_columns):
+                    #     W[t][0] = W_computation[t][0]
+                    #============ OPTIMIZED AS FOLLOWS:
+                    W_computation = X.transpose().dot(alphas.schur(y))
+                    W.assign(W_computation)
+                    #============
+
+                    num_changed_alloc[0] += 1
+                    
+            i[0] += 1
+            return i[0]
+
+        @if_e(num_changed_alloc[0] == 0)
+        def _():
+            passes_alloc[0] += 1
+        @else_
+        def _():
+            passes_alloc[0] = 0
+
+        return passes_alloc[0] < max_passes_alloc[0]
+
+    return W, b[0], alphas 
+
+
+def predict(X, W, b):
+    b_array = Matrix(len(X), 1, sfix)
+    b_array.assign_all(b)
+
+    predictions = Array(len(X), sfix)
+    evaluation = X * W + b_array
+
+    for i in range(len(X)):
+        @if_e((evaluation[i][0] > 0).reveal())
+        def _():            
+            predictions[i] = 1
+        @else_
+        def _():
+            predictions[i] = -1
+    
+    return predictions    
+
+
+def get_index_heuristic(j):
+    i_alloc = Array(1, cint)
+    
+    @do_while
+    def _():
+        i_alloc[0] = regint.get_random(n_bits)
+        return (((((i_alloc[0] == j) + 1) % 2) * (((i_alloc[0] >= cint(n_rows)) + 1) % 2)) + 1) % 2
+
+    return i_alloc[0]
+
+
+def score(X, y, W, b):
+    predictions = predict(X, W, b)
+    sum_eq = Array(1, sfix)
+    for i in range(len(X)):
+        @if_((predictions[i] == y[i][0]).reveal())
+        def _():
+            sum_eq[0] += 1
+    
+    return sum_eq[0] / len(X)
+
+
+# Matrix with data
+X = Matrix(n_rows, n_columns, sfix)
+
+# Complete matrix data construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        for column in range(n_columns):
+            X[row + i * rows_per_party][column] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    for column in range(n_columns):
+        X[row + (n_parties - 1) * rows_per_party][column] = sfix.get_input_from(n_parties - 1)
+
+# Response vector
+y = Matrix(n_rows, 1, sfix)
+
+# Response variable construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        y[row + i * rows_per_party][0] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    y[row + (n_parties - 1) * rows_per_party][0] = sfix.get_input_from(n_parties - 1)
+
+print_ln("X shape = %s, %s", len(X), len(X[0]))
+print_ln("y shape = %s, %s", len(y), len(y[0]))
+print_ln("--")
+
+W, b, alphas = fit(X, y, max_phases)
+
+# Show the weights
+# print_ln("Weights:")
+# show_matrix(W)
+
+show_matrix(alphas)
+print_ln("[%s]", b.reveal())
+print_ln("--")
+
+# Show the accuracy
+# print_ln("Accuracy:")
+# accuracy = score(X, y, W, b)
+# print_ln("%s", accuracy.reveal())

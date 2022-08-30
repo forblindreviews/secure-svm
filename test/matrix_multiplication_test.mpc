@@ -1,0 +1,15 @@
+M = Matrix(2, 2, sfix)
+M[0][0] = 7
+M[1][0] = 5
+M[0][1] = 6
+M[1][1] = 0
+
+A = Matrix(2, 1, sfix)
+A[0][0] = 10
+A[1][0] = 20
+
+dot = A.transpose().dot(M[0])
+
+print_ln("%s", M[0].reveal())
+print_ln("%s", dot.reveal())
+

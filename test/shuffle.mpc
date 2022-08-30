@@ -1,0 +1,84 @@
+import random
+
+
+def show_matrix(X):
+    for i in range(len(X)):
+        print_ln("%s", X[i].reveal())
+    print_ln("----------------")
+
+
+def interchange_rows(X, az, k):
+    tmp = Array(len(X[az]), sfix)
+    tmp.assign_all(0)
+    tmp += X[az]
+
+    for j in range(len(X[k])):
+        X[az][j] = X[k][j]
+
+    for j in range(len(X[k])):
+        X[k][j] = tmp[j]
+
+    return X
+
+
+def shuffle_matrix(X, y):
+    n = len(X)
+    for k in range(n - 1, 0, -1):
+        az = random.randint(0, k)
+
+        print_ln("%s %s", sint(k).reveal(), sint(az).reveal())
+
+        X = interchange_rows(X, az, k)
+        y = interchange_rows(y, az, k)
+
+    return X, y
+
+
+# Number of parties
+n_parties = 2
+
+# Number of rows for each party
+n_party_0 = 3
+n_party_1 = 2
+
+n_rows = n_party_0 + n_party_1
+n_columns = 2
+
+# Matrix with data
+X = Matrix(n_rows, n_columns + 1, sfix)
+
+# Complete matrix data construction
+@for_range(n_party_0)
+def _(row):
+    for column in range(n_columns):
+        X[row][column] = sfix.get_input_from(0)
+    X[row][n_columns] = sfix(1.0)
+
+@for_range(n_party_1)
+def _(row):
+    for column in range(n_columns):
+        X[row + n_party_0][column] = sfix.get_input_from(1)
+    X[row + n_party_0][n_columns] = sfix(1.0)
+
+# Response vector
+y = Matrix(n_rows, 1, sfix)
+
+# Response variable construction
+@for_range(n_party_0)
+def _(row):
+    y[row][0] = sfix.get_input_from(0)
+
+@for_range(n_party_1)
+def _(row):
+    y[row + n_party_0][0] = sfix.get_input_from(1)
+
+print_ln("X and y before:")
+show_matrix(X)
+show_matrix(y)
+
+X, y = shuffle_matrix(X, y)
+
+print_ln("X and y after:")
+show_matrix(X)
+show_matrix(y)
+

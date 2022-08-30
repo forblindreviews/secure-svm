@@ -1,0 +1,127 @@
+import mpc_math
+from Compiler import ml
+
+
+# Execution parameters 
+n_rows = int(program.args[1])
+n_columns = int(program.args[2])
+n_parties = int(program.args[3])
+f = int(program.args[4])
+k = int(program.args[5])
+
+
+sfix.set_precision(f, k)
+
+
+# SGD parameters
+lr = float(program.args[6])
+threshold = float(program.args[7])
+max_iter = int(program.args[8])
+
+
+# Number of rows for each party
+rows_per_party = n_rows // n_parties
+last_party = 0 
+if n_rows % n_parties != 0:
+    last_party = rows_per_party + (n_rows % n_parties)
+else:
+    last_party = rows_per_party
+
+
+def show_matrix(X):
+    for i in range(len(X)):
+        print_ln("%s", X[i].reveal())
+        
+    
+def scalar_vector_mult(scalar, vector):
+    result_vector = Matrix(len(vector), 1, sfix)
+    
+    @for_range(len(vector))
+    def _(i):
+        result_vector[i] = scalar * vector[i]
+    
+    return result_vector
+
+
+def scalar_matrix_mult(scalar, matrix):
+    result_matrix = Matrix(len(matrix), len(matrix[0]), sfix)
+    
+    @for_range(len(matrix))
+    def _(i):
+        @for_range(len(matrix[0]))
+        def _(j):
+            result_matrix[i][j] = scalar * matrix[i][j]
+    
+    return result_matrix
+
+
+def compute_sigmoid_matrix(M):
+    sig_M = Matrix(len(M), len(M[0]), sfix)
+    
+    @for_range(len(M))
+    def _(i):
+        @for_range(len(M[0]))
+        def _(j):
+            sig_M[i][j] = ml.sigmoid(M[i][j])
+            
+    return sig_M
+
+
+def compute_grads(X, y, w):
+    sig_eval = compute_sigmoid_matrix(X * w)
+    grads = X.trans_mul(sig_eval - y)
+    return grads
+
+
+def fit(X, y):
+    # Random init for w
+    w = Matrix(len(X[0]), 1, sfix)
+    
+    @for_range(len(w))
+    def _(i):
+        w[i][0] = sfix.get_random(0, 1) 
+        
+    @for_range(max_iter)
+    def _(i):
+        grads = compute_grads(X, y, w)
+        w.assign(w + scalar_vector_mult(-lr, grads))
+        
+    return w
+
+
+# Matrix with data
+X = Matrix(n_rows, n_columns + 1, sfix)
+
+# Complete matrix data construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        for column in range(n_columns):
+            X[row + i * rows_per_party][column] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    for column in range(n_columns):
+        X[row + (n_parties - 1) * rows_per_party][column] = sfix.get_input_from(n_parties - 1)
+        
+# Expand matrix for intercept
+for row in range(n_rows):
+    X[row][n_columns] = sfix(1)
+
+# Response vector
+y = Matrix(n_rows, 1, sfix)
+
+# Response variable construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        y[row + i * rows_per_party][0] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    y[row + (n_parties - 1) * rows_per_party][0] = sfix.get_input_from(n_parties - 1)
+
+print_ln("X shape = %s, %s", len(X), len(X[0]))
+print_ln("y shape = %s, %s", len(y), len(y[0]))
+print_ln("--")
+
+w = fit(X, y)
+
+show_matrix(w)
+print_ln("--")

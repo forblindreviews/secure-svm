@@ -1,0 +1,29 @@
+# In this program, we compute S = k * A_1^T * A_2
+
+n = 5
+k = 2000
+
+array_1 = Matrix(n, 1, sfix)
+array_2 = Matrix(n, 1, sfix)
+
+for i in range(n):
+    array_1[i] = sfix.get_input_from(0)
+
+for i in range(n):
+    array_2[i] = sfix.get_input_from(1)
+
+sum_dot_product = Array(1, sfix)
+sum_dot_product[0] = 0
+
+dot_product = Array(1, sfix)
+
+@for_range(k)
+def _(i):
+    dot_product[0] = 0
+    @for_range(n)
+    def _(j):
+        dot_product[0] += array_1[j][0] * array_2[j][0]
+    sum_dot_product[0] += dot_product[0]
+    
+
+print_ln("Result: %s", sum_dot_product[0].reveal())

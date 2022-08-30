@@ -1,0 +1,98 @@
+* ¿Qué complejidad debe tener el conjunto de datos?
+* ¿Cual sera la naturaleza del conjunto de datos? ¿Generado artificialmente o proveniente de un probelma real?
+* ¿Cuantas filas y columnas?
+* ¿Se probarán todos los algoritmos? 
+* ¿Cuántas repeticiones por experimento? Utilizar metodo estadístico.
+----
+
+* Seleccionar el conjunto de datos
+
+----
+
+* Métricas a considerar:
+    - Accuracy
+    - Performance (running-time)
+    - Datos enviados (No tan importante) - Desempate
+    - (Metrica ocasional) Qué tamaño del anillo se está usando.
+
+PREGUNTAS:
+* ¿Cuál es el método mas apropiado para MPC+SVM?
+* ¿Es viable ejecutar MPC + SVM?
+    - Eficiente
+    - Preciso
+    - Como se compara con la ejecución en limpio
+* ¿Qué parametros de MPC son suficientes para entrenar un SVM con un conjunto de datos dado?
+
+EXPERIMENTOS:
+    Responder primera pregunta:
+        * Experimentos con datos simples para la primera pregunta. Dataset sintético y comparamos todos métodos.
+        * Como se comparan con la versión en limpio con los mismos datos sintéticos del literal anterior.
+        * Dimension X: (50, 2)
+
+        Parámetros globales de SMO:
+            lambd = 4
+            tolerance = 1e-4
+            lr = 0.1
+            max_iter = 50
+            kernel_type = "linear"
+
+            sfix.set_precision(20, 67)
+            Ring size = 149
+
+    Para los parámetros:
+        * Cambiamos tamaño del dataset, la complejidad y la naturaleza. Comparando con la versión en limpio. Cambios a una escala fija.
+          Usamos dataset con datos sintéticos. 
+
+        Parámetros globales:
+            lambd = 4
+            tolerance = 1e-4
+            lr = 0.1
+            max_iter = 50
+            kernel_type = "linear"
+
+        Precision:
+            * En el experimento de selección del método: se usó sfix.set_precision(20, 82) - Ring size = 188             
+            * En el experimento de cambio de filas:
+                - 40F-2C se usó sfix.set_precision(20, 65) - Ring size = 144
+                - 50F-2C se usó sfix.set_precision(20, 67) - Ring size = 149
+                - 60F-2C se usó sfix.set_precision(20, 69) - Ring size = 154 
+                - 70F-2C se usó sfix.set_precision(20, 70) - Ring size = 158 
+                - 80F-2C se usó sfix.set_precision(20, 72) - Ring size = 163
+                - 90F-2C se usó sfix.set_precision(20, 73) - Ring size = 164
+                - 100F-2C se usó sfix.set_precision(20, 74) - Ring size = 168
+            * En el experimento de cambio de columnas:
+                - 100F-2C se usó sfix.set_precision(20, 74) - Ring size = 168
+                - 100F-3C se usó sfix.set_precision(20, 78) - Ring size = 178 
+                - 100F-4C se usó sfix.set_precision(20, 80) - Ring size = 183
+                - 100F-5C se usó sfix.set_precision(20, 82) - Ring size = 188
+                - 100F-6C se usó sfix.set_precision(20, 84) - Ring size = 193
+                - 100F-7C se usó sfix.set_precision(20, 85) - Ring size = 194
+                - 100F-8C se usó sfix.set_precision(20, 86) - Ring size = 198
+                - 100F-9C se usó sfix.set_precision(20, 87) - Ring size = 199
+                - 100F-10C se usó sfix.set_precision(20, 88) - Ring size = 203
+            * En el experimento de la dificultad de los dataset, se usó sfix.set_precision(20, 74) - Ring size: 168
+                Dimension X: (100, 2)   
+
+    Para la viabilidad:
+        * Usamos dataset real. Usar kernels distintos.
+
+        Parámetros globales:
+            lambd = 2
+            tolerance = 1e-4
+            lr = 1e-2
+            max_iter = 80
+            kernel_type = "poly"
+            degree = 3
+
+        Los datos tienen una dimensión de: (212, 14)
+
+        Se usó una precisión de 32 bits para la parte fraccionaria, por tanto se usa
+            sfix.set_precision(32, 110)
+            Ring size = 246
+
+
+    Best params models 
+
+    Results SGD: {'max_accuracy': 0.89, 'best_params': {'lr': 0.5, 'C': 4}}
+    Results SMO: {'max_accuracy': 0.87, 'best_params': {'C': 1, 'tolerance': 0.001, 'eps': 0.1}}
+    Results LS: {'max_accuracy': 0.85, 'best_params': {'lr': 0.01, 'lambd': 1}}

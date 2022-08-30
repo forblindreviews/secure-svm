@@ -1,0 +1,5 @@
+a = sfix(1)
+b = sfix(100000)
+c = a / b
+
+print_ln("%s", c.reveal())

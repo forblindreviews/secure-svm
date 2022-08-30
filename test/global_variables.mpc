@@ -1,0 +1,21 @@
+n = 5
+k = 2000
+
+array_1 = Matrix(n, 1, sfix)
+array_2 = Matrix(n, 1, sfix)
+
+for i in range(n):
+    array_1[i] = sfix.get_input_from(0)
+
+for i in range(n):
+    array_2[i] = sfix.get_input_from(1)
+
+sum_dot_product = sfix(0)
+
+@for_range_opt(k)
+def _(i):
+    global sum_dot_product, array_1, array_2
+    sum_dot_product += array_1.trans_mul(array_2)[0][0]
+    
+
+print_ln("Result: %s", sum_dot_product.reveal())

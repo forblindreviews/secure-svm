@@ -1,0 +1,5 @@
+a = sfix(20)
+b = sfix(4)
+
+max = a.max(b)
+print_ln("%s", max.reveal())

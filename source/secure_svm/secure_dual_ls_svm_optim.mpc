@@ -1,0 +1,294 @@
+import numpy as np
+import math
+import mpc_math
+
+
+# Execution parameters 
+n_rows = int(program.args[1])
+n_columns = int(program.args[2])
+n_parties = int(program.args[3])
+f = int(program.args[4])
+k = int(program.args[5])
+
+sfix.set_precision(f, k)
+
+# SGD parameters
+lambd = float(program.args[6])
+lr = float(program.args[7])
+max_iter = int(program.args[8])
+kernel_type = "linear"
+degree = None
+
+# Number of rows for each party
+rows_per_party = n_rows // n_parties
+last_party = 0 
+if n_rows % n_parties != 0:
+    last_party = rows_per_party + (n_rows % n_parties)
+else:
+    last_party = rows_per_party
+
+
+# Data dimensions
+n_bits = math.floor(math.log2(n_rows)) + 1
+
+
+def show_matrix(X):
+    for i in range(len(X)):
+        print_ln("%s", X[i].reveal())
+
+
+#TODO optimize kernel computation
+def kernel(a, b):
+    '''
+    a and b as row vectors
+    '''
+    if kernel_type == "linear":
+        return sfix.dot_product(a, b)
+    if kernel_type == "poly":
+        return (1 + sfix.dot_product(a, b)) ** degree
+
+
+def scalar_vector_mult(scalar, vector):
+    result_vector = Matrix(len(vector), 1, sfix)
+    
+    @for_range(len(vector))
+    def _(i):
+        result_vector[i] = scalar * vector[i]
+    
+    return result_vector
+
+
+def scalar_matrix_mult(scalar, matrix):
+    result_matrix = Matrix(len(matrix), len(matrix[0]), sfix)
+    
+    @for_range(len(matrix))
+    def _(i):
+        @for_range(len(matrix[0]))
+        def _(j):
+            result_matrix[i][j] = scalar * matrix[i][j]
+    
+    return result_matrix
+
+
+def compute_omega(X, y):
+    omega = Matrix(len(X), len(X), sfix)
+    @for_range(len(X))
+    def _(i):
+        @for_range(len(X))
+        def _(j):
+            Xi = X[i]
+            Xj = X[j]
+            omega[i][j] = y[i][0] * y[j][0] * kernel(Xi, Xj)
+    return omega
+
+
+def compute_A(omega, y):
+    id_matrix = Matrix(len(omega), len(omega), sfix)
+    id_matrix.assign_all(0)
+    @for_range(len(omega))
+    def _(i):
+        id_matrix[i][i] = 1
+
+    omega_lamba_id = omega + scalar_matrix_mult(lambd, id_matrix)
+
+    A = Matrix(len(omega) + 1, len(omega) + 1, sfix)
+
+    @for_range(len(omega))
+    def _(i):
+        A[0][i + 1] = -y[i][0]
+        A[i + 1][0] = y[i][0]
+
+    @for_range(len(omega))
+    def _(i):
+        @for_range(len(omega))
+        def _(j):
+            A[i + 1][j + 1] = omega_lamba_id[i][j]
+    
+    return A
+
+
+def l2_norm(a):
+    norm = Array(1, sfix)
+    norm[0] = sfix(0)
+    @for_range(len(a))
+    def _(i):
+        norm[0] += a[i][0] * a[i][0] 
+    
+    return mpc_math.sqrt(norm[0])
+
+
+def l2_norm_squared(a):
+    norm = Array(1, sfix)
+    norm[0] = sfix(0)
+    @for_range(len(a))
+    def _(i):
+        norm[0] += a[i][0] * a[i][0] 
+    
+    return norm[0]
+
+
+def fit(X, y):
+    omega = compute_omega(X, y)
+    A = compute_A(omega, y)
+
+    # Matrix for the linear system
+    opt_matrix = A.trans_mul(A)
+
+    # Vector of the linear system
+    ones_hat = Matrix(len(X) + 1, 1, sfix)
+    ones_hat.assign_all(0)
+    @for_range(len(X))
+    def _(i):
+        ones_hat[i + 1][0] = sfix(1)
+
+    opt_vect = A.trans_mul(ones_hat)
+
+    # Random init for beta_k
+    beta_k = Matrix(len(X) + 1, 1, sfix)
+    @for_range(len(beta_k))
+    def _(i):
+        beta_k[i][0] = sfix.get_random(0, 1)
+    
+    # Boolean variable for loop control
+    continue_loop = Array(1, cint)
+    continue_loop[0] = 1
+
+    # Number of iterations
+    iterations = Array(1, cint)
+    iterations[0] = 0
+
+    @do_while
+    def _(): 
+        # Computes p_k = opt_matrix * beta_k - opt_vect
+        p_k = opt_matrix * beta_k - opt_vect
+
+        # Computes p_k.T * opt_matrix
+        p_k_transp_opt_mat = p_k.trans_mul(opt_matrix)
+        
+        # Computes r_k = (p_k.T * p_k) / (p_k.T * opt_matrix * p_k) - the steep size
+        pk_trans_pk = l2_norm_squared(p_k)
+        r_k = (pk_trans_pk) / (p_k_transp_opt_mat * p_k)[0][0]
+        
+        # Computes next step for beta_k as beta_(k + 1) = beta_k - r_k * p_k
+        beta_k_new = beta_k + scalar_vector_mult(-1 * (1 - lr) * r_k, p_k)
+
+        # Update beta
+        beta_k.assign(beta_k_new)
+
+        iterations[0] += 1
+        
+        # To continue the loop the iterations must be less than max_iter
+        continue_loop[0] = (iterations[0] < max_iter)
+
+        return continue_loop[0]
+    
+    # Computes alphas and intercept
+    alphas = Matrix(len(X), 1, sfix)
+    @for_range(len(X))
+    def _(i):
+        alphas[i][0] = beta_k[i + 1][0]
+    
+    b = beta_k[0][0]
+
+    return alphas, b   
+    
+
+def vector_distance(a, b):
+    norm = Array(1, sfix)
+    norm[0] = 0
+    @for_range(len(a))
+    def _(i):
+        norm[0] += (a[i][0] - b[i][0]) ** 2
+    
+    return mpc_math.sqrt(norm[0])
+
+
+def predict_distance_vect(x, X_data, y_data, alphas, b):
+    '''
+    x as a row vector
+    '''
+    prediction = Array(1, sfix)
+    prediction[0] = 0
+    @for_range(len(X_data))
+    def _(i):
+        prediction[0] += alphas[i][0] * y[i][0] * kernel(X_data[i], x)
+    
+    prediction += b
+    return prediction 
+
+
+def predict_distance(X, X_data, y_data, alphas, b):
+    predictions = Matrix(len(X), 1, sfix)
+    @for_range(len(X))
+    def _(i):
+        predictions[i][0] = predict_distance_vect(X[i], X_data, y_data, alphas, b)
+
+    return predictions
+
+
+def predict(X, X_data, y_data, alphas, b):
+    b_array = Matrix(len(X), 1, sfix)
+    b_array.assign_all(b)
+
+    predictions = Array(len(X), sfix)
+    evaluation = predict_distance(X, X_data, y_data, alphas, b)
+
+    for i in range(len(X)):
+        @if_e((evaluation[i][0] > 0).reveal())
+        def _():            
+            predictions[i] = 1
+        @else_
+        def _():
+            predictions[i] = -1
+    
+    return predictions    
+
+
+def score(X, y, X_data, y_data, alphas, b):
+    predictions = predict(X, X_data, y, alphas, b)
+    sum_eq = Array(1, sfix)
+    for i in range(len(X)):
+        @if_((predictions[i] == y[i][0]).reveal())
+        def _():
+            sum_eq[0] += 1
+    
+    return sum_eq[0] / len(X)
+
+
+# Matrix with data
+X = Matrix(n_rows, n_columns, sfix)
+
+# Complete matrix data construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        for column in range(n_columns):
+            X[row + i * rows_per_party][column] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    for column in range(n_columns):
+        X[row + (n_parties - 1) * rows_per_party][column] = sfix.get_input_from(n_parties - 1)
+
+# Response vector
+y = Matrix(n_rows, 1, sfix)
+
+# Response variable construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        y[row + i * rows_per_party][0] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    y[row + (n_parties - 1) * rows_per_party][0] = sfix.get_input_from(n_parties - 1)
+
+print_ln("X shape = %s, %s", len(X), len(X[0]))
+print_ln("y shape = %s, %s", len(y), len(y[0]))
+print_ln("--")
+
+alphas, b = fit(X, y)
+
+show_matrix(alphas)
+print_ln("[%s]", b.reveal())
+print_ln("--")
+
+# print_ln("Accuracy:")
+# accuracy = score(X, y, X, y, alphas, b)
+# print_ln("%s", accuracy.reveal())

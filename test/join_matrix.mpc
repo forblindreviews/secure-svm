@@ -1,0 +1,24 @@
+n_parties = 2
+
+n_party_0 = 2
+n_party_1 = 1
+
+n_rows = n_party_0 + n_party_1
+n_columns = 2
+
+mat_data = Matrix(n_rows, n_columns, sfix)
+
+@for_range(n_party_0)
+def _(row):
+    for column in range(2):
+        mat_data[row][column] = sfix.get_input_from(0)
+
+@for_range(n_party_1)
+def _(row):
+    for column in range(2):
+        mat_data[row + n_party_0][column] = sfix.get_input_from(1)
+
+print_ln("Matrix")
+for i in range(n_rows):
+    for j in range(n_columns):
+        print_ln("Row: %s, Column: %s => %s", i, j, mat_data[i][j].reveal())

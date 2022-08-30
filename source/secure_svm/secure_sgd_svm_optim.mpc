@@ -1,0 +1,190 @@
+from cgi import print_environ
+import random
+
+from scipy.__config__ import show
+
+
+# Execution parameters 
+n_rows = int(program.args[1])
+n_columns = int(program.args[2])
+n_parties = int(program.args[3])
+f = int(program.args[4])
+k = int(program.args[5])
+
+sfix.set_precision(f, k)
+
+# SGD parameters
+lr = float(program.args[6])
+lambd = float(program.args[7])
+epochs = int(program.args[8])
+
+# Number of rows for each party
+rows_per_party = n_rows // n_parties
+last_party = 0 
+if n_rows % n_parties != 0:
+    last_party = rows_per_party + (n_rows % n_parties)
+else:
+    last_party = rows_per_party
+
+
+def show_matrix(X):
+    for i in range(len(X)):
+        print_ln("%s", X[i].reveal())
+
+
+def negative(X):
+    neg_X = Matrix(len(X), len(X[0]), sfix)
+    for i in range(len(X)):
+        for j in range(len(X[0])):
+            neg_X[i][j] = X[i][j] * sfix(-1)
+    return neg_X
+
+
+def fit(X, y):
+    '''
+    Method for SVM fitting
+    '''
+    # Number of columns in data
+    m = len(X[0])
+
+    # Weight initialization
+    W = Matrix(m, 1, sfix)
+    @for_range_opt(m)
+    def _(i):
+        W[i][0] = sfix.get_random(0, 1)   # Check if this could be changed to W[i][0] = sfix(cfix.get_random()) 
+
+    b = Array(1, sfix)
+    b[0] = sfix.get_random(0, 1)
+
+    # Here we need a classic for in order to get acces to W
+    @for_range_opt(epochs)
+    def _(epoch):
+        grads_w, grads_b = compute_grads(X, y, W, b[0])
+        
+        # Computes an scalar-vector multiplication and this is not optimizable
+        lr_times_grads = Matrix(m, 1, sfix)
+        @for_range_opt(m)
+        def _(i):
+            lr_times_grads[i][0] = -lr * grads_w[i][0]
+        
+        W.assign(W + lr_times_grads)
+
+        b[0] = b[0] - lr * grads_b
+
+    return W, b[0]
+
+
+def compute_grads(X, y, W, b):
+    '''
+    Method for loss gradient computation
+    '''
+    grads_w = Matrix(len(W), 1, sfix)
+    grads_w.assign_all(0)
+
+    # Create ones vector
+    b_vector = Matrix(len(y), 1, sfix)
+    b_vector.assign_all(b)
+
+    ones = Matrix(len(y), 1, sfix)
+    ones.assign_all(1)
+    
+    distance = ones + negative(y.schur(X * W + b_vector))
+
+    # Computes indicator vector
+    ind_vector = Matrix(len(y), 1, sfix)
+    @for_range_opt(len(distance))
+    def _(i):
+        ind_vector[i][0] = (distance[i][0] > 0)
+
+    # Computes gradient for w
+    @for_range_opt(len(X))
+    def _(i):
+        # Computes -yi * (1 - d_i) * Xi. This loop is mandatory because we are computing scalar/vector multiplications
+        mult_Xi = Matrix(len(X[i]), 1, sfix)
+        @for_range_opt(len(X[i]))
+        def _(j):
+            mult_Xi[j][0] = -y[i][0] * X[i][j] * ind_vector[i][0]
+        grads_w.assign(grads_w + mult_Xi) 
+    
+    @for_range_opt(len(grads_w))
+    def _(i):
+        grads_w[i][0] += lambd * W[i][0]
+
+    # Computes gradient for b
+    grads_b = Array(1, sfix)
+    @for_range_opt(len(X))
+    def _(i):
+        # Computes yi * (1 - d_i). This loop is mandatory because we are computing scalar/vector multiplications
+        grads_b[0] += -y[i][0] * ind_vector[i][0]
+    
+    return grads_w, grads_b[0]
+
+
+def score(X, y, W, b):
+    predictions = predict(X, W, b)
+    sum_eq = Array(1, sfix)
+    for i in range(len(X)):
+        @if_((predictions[i] == y[i][0]).reveal())
+        def _():
+            sum_eq[0] += 1
+    
+    return sum_eq[0] / len(X)
+
+
+def predict(X, W, b):
+    predictions = Array(len(X), sfix)
+
+    b_vector = Matrix(len(y), 1, sfix)
+    b_vector.assign_all(b)
+
+    evaluation = X * W + b_vector
+
+    for i in range(len(X)):
+        @if_e((evaluation[i][0] >= 0).reveal())
+        def _():            
+            predictions[i] = 1
+        @else_
+        def _():
+            predictions[i] = -1
+    
+    return predictions
+
+
+# Matrix with data
+X = Matrix(n_rows, n_columns, sfix)
+
+# Complete matrix data construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        for column in range(n_columns):
+            X[row + i * rows_per_party][column] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    for column in range(n_columns):
+        X[row + (n_parties - 1) * rows_per_party][column] = sfix.get_input_from(n_parties - 1)
+
+# Response vector
+y = Matrix(n_rows, 1, sfix)
+
+# Response variable construction
+for i in range(n_parties - 1):
+    for row in range(rows_per_party):
+        y[row + i * rows_per_party][0] = sfix.get_input_from(i)
+
+for row in range(last_party):
+    y[row + (n_parties - 1) * rows_per_party][0] = sfix.get_input_from(n_parties - 1)
+
+W, b = fit(X, y)
+
+print_ln("X shape = %s, %s", n_rows, n_columns)
+print_ln("y shape = %s, %s", len(y), len(y[0]))
+print_ln("--")
+
+show_matrix(W)
+print_ln("[%s]", b.reveal())
+print_ln("--")
+
+# Show accuracy
+# print_ln("Accuracy:")
+# accuracy = score(X, y, W, b)
+# print_ln("%s", accuracy.reveal())

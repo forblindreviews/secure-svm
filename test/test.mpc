@@ -1,0 +1,19 @@
+array = Array(4, sfix)
+
+for i in range(2):
+    array[i] = sfix.get_input_from(0)
+
+for i in range(2):
+    array[i + 2] = sfix.get_input_from(1)
+
+sum_posit = Array(1, sfix)
+sum_posit[0] = 0
+
+@for_range(4)
+def _(i):
+    @if_((array[i] > 0).reveal())
+    def _():
+        print_ln("Positive")
+        sum_posit[0] = sum_posit[0] + array[i]
+
+print_ln("Sum posit: %s", sum_posit[0].reveal())
