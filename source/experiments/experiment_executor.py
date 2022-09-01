@@ -381,12 +381,12 @@ if __name__ == "__main__":
         # "test_350r_4c",
         # "test_400r_4c",
         
-        # "test_400r_2c",
-        # "test_400r_3c",
-        # "test_400r_5c",
-        # "test_400r_6c",
-        # "test_400r_7c",
-        # "test_400r_8c"
+        "test_400r_2c",
+        "test_400r_3c",
+        "test_400r_5c",
+        "test_400r_6c",
+        "test_400r_7c",
+        "test_400r_8c"
 
         # "test_class_sep_040",
         # "test_class_sep_050",
@@ -405,8 +405,8 @@ if __name__ == "__main__":
 
         # "real_experiment_400"
         
-        "real_experiment_hcc",
-        "real_experiment_credit",
+        # "real_experiment_hcc",
+        # "real_experiment_credit",
         
         # "network_experiment",
         # "real_experiment_definitive"

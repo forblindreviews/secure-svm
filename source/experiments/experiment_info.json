@@ -154,12 +154,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -195,12 +189,6 @@
         "train_percentage": 0.5,
         "change_dataset": false,
         "protocols": [
-            {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
             {
                 "name": "replicated-ring",
                 "script": "ring.sh",
@@ -238,12 +226,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -279,12 +261,6 @@
         "train_percentage": 0.5,
         "change_dataset": false,
         "protocols": [
-            {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
             {
                 "name": "replicated-ring",
                 "script": "ring.sh",
@@ -322,12 +298,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -363,12 +333,6 @@
         "train_percentage": 0.5,
         "change_dataset": false,
         "protocols": [
-            {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
             {
                 "name": "replicated-ring",
                 "script": "ring.sh",
@@ -406,12 +370,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -447,12 +405,6 @@
         "train_percentage": 0.5,
         "change_dataset": false,
         "protocols": [
-            {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
             {
                 "name": "replicated-ring",
                 "script": "ring.sh",
@@ -490,12 +442,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -531,12 +477,6 @@
         "train_percentage": 0.5,
         "change_dataset": false,
         "protocols": [
-            {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
             {
                 "name": "replicated-ring",
                 "script": "ring.sh",
@@ -574,12 +514,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -616,12 +550,6 @@
         "change_dataset": false,
         "protocols": [
             {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
-            {
                 "name": "replicated-ring",
                 "script": "ring.sh",
                 "n_parties": 3,
@@ -657,12 +585,6 @@
         "train_percentage": 0.5,
         "change_dataset": false,
         "protocols": [
-            {
-                "name": "semi2k",
-                "script": "semi2k.sh",
-                "n_parties": 2,
-                "type": "mod2k"
-            },
             {
                 "name": "replicated-ring",
                 "script": "ring.sh",
